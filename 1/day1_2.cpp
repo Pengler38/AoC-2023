@@ -5,7 +5,7 @@
  * ppengler@mtu.edu
  *
  * MotD: actually on second thought this program is too easily parallelized,
- *  I'm hardly doing concurrent programming
+ *  I'm hardly doing concurrent programming :(
  *
  */
 
@@ -20,6 +20,65 @@
 int inputs;
 int* num;
 std::vector<std::string> inputList = std::vector<std::string>();
+
+
+
+//checkNumber
+//checks the inputted string at the input position for a number, whether it be a word or digit
+//param:
+//  std::string str: 
+//  int pos: the position to check
+//return: returns '\0' upon no digit found, otherwise returns the digit
+#define NUMBERS 9
+#define NUMLEN 5
+char checkNumber(std::string str, int pos)
+{
+  //if(std::isdigit(static_cast<unsigned char>str[pos])) return true;
+  if(std::isdigit(str[pos])) return str[pos];
+
+
+  //Array of number patterns to check 
+  //padded with spaces to all have the same length (5)
+  const char* numberPatterns [NUMBERS] = {
+    "one  ",
+    "two  ",
+    "three",
+    "four ",
+    "five ",
+    "six  ",
+    "seven",
+    "eight",
+    "nine "
+  };
+  
+  //Array of numbers currently possible
+  bool numbers [NUMBERS] = {
+    true, true, true, true, true, true, true, true, true,
+  };
+
+  char digits [NUMBERS+1] = "123456789";
+
+
+  //check for digits that are words
+  for(int i = 0; i < NUMLEN && pos+i < (int) str.size(); i++)
+  {
+    for(int j = 0; j < NUMBERS; j++)
+    {
+      char testchar = numberPatterns[j][i];
+      if(testchar != ' ' && str[pos+i] != testchar) numbers[j] = false;
+    }
+  }
+  
+  for(int i = 0; i < NUMBERS; i++)
+  {
+    if(numbers[i] == true) return digits[i];
+  }
+
+  //No numbers found, return null char
+  return '\0';
+}
+
+
 
 //handle
 //param:
@@ -38,14 +97,15 @@ void handle(int start, int end)
     bool first = true;
     for(unsigned int j = 0; j < inputList[i].size(); j++)
     {
-      if( std::isdigit( static_cast<unsigned char>(inputList[i][j]) ))
+      char digit = checkNumber(inputList[i], j);
+      if( digit != '\0')
       {
         if(first) {
-          s[0] = inputList[i][j];
-          s[1] = inputList[i][j];
+          s[0] = digit;
+          s[1] = digit;
           first = false;
         }
-        else s[1] = inputList[i][j];
+        else s[1] = digit;
       }
     }
 
@@ -53,6 +113,8 @@ void handle(int start, int end)
   }
 
 }
+
+
 
 //Main Function, enough said
 int main()
@@ -107,19 +169,4 @@ int main()
     delete t[i];
   }
   delete[] num;
-}
-
-//experiment w/ making a class like this, goal is to statically initialize arr?
-//maybe just stick with vector
-typedef struct my_string{
-  int len;
-  char* arr;
-} str;
-
-
-//Base function idea: have an array of strings, first string has all the first chars of digits (o, t, t, f, etc.)
-//use that to check if the first char matches, then go down the word to see if the whole word matches
-bool is_digit()
-{
-
 }
