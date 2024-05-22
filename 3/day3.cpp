@@ -1,12 +1,6 @@
 //Preston Engler
 //day3.cpp
 
-//TODO: 
-//bug 1: it is currently including the final digit, 975, which it should not
-//bug 2: 482388 is the current answer
-//  excepting bug 1 it would be 481413 BUT 482388 is already too low of an answer!
-//  this means there is a hidden bug currently :(
-
 #include <string>
 #include <vector>
 #include <iostream>
@@ -27,7 +21,7 @@ bool isPartNumber(vector<string> input, int row, int start, int end)
   bool top = (row > 0) ? true : false;
   bool bottom = (row < (int) input.size()-1) ? true : false;
   bool left = (start > 0) ? true : false;
-  bool right = (end < (int) input[row].size()-1) ? true : false;
+  bool right = (end < (int) input[row].size()-2) ? true : false;
 
   //TODO can a number be adjacent to a number? May need to check if it's not '.' and not a digit!
 
@@ -39,7 +33,7 @@ bool isPartNumber(vector<string> input, int row, int start, int end)
 
   //left/right
   if(left && input[row][start-1] != '.') return true;
-  if(left && input[row][start-1] != '.') return true;
+  if(right && input[row][end+1] != '.') return true;
 
   //top
   for(int i = start; top && i <= end; i++)
