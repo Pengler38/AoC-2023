@@ -6,7 +6,7 @@ use std::fs;
 use regex::Regex;
 
 
-
+const NUM_GAMES: usize = 211;
 
 fn main() {
     //split input.txt by line
@@ -25,15 +25,15 @@ fn main() {
 
 
     let mut points = 0;
+    let mut num_scratch_cards: [u32; NUM_GAMES] = [1; NUM_GAMES];
 
-    let mut i = 0;
+    let mut i: u32 = 0;
 
     for scratch_card in inputs {
         let mut iter: regex::CaptureMatches  = reg.captures_iter(scratch_card);
         iter.next(); //The first match is the game number, use next to ignore it
 
-        i += 1;
-        print!("Game {i}: ");
+        print!("Game {}: ", i+1);
 
         let mut winning_nums: u32 = 0;
         let mut vec: Vec<String> = Vec::new();
@@ -67,13 +67,23 @@ fn main() {
 
         if winning_nums > 0
         {
+            //Tally scratch cards won
+            add_scratch(i, &mut num_scratch_cards, winning_nums);
+
+            //Tally points
             points += 2_i32.pow(winning_nums-1);
             println!(": {}, {}", winning_nums, 2_i32.pow(winning_nums-1));
         }
         else{
-            println!(": {}, {}", winning_nums, 0);
+            println!(": {}, {}", &winning_nums, 0);
         }
 
+        i += 1;
+    }
+
+    let mut scratch_cards_won = 0;
+    for num in num_scratch_cards {
+        scratch_cards_won += num;
     }
 
     //let first: regex::Captures = iter.next().unwrap();
@@ -86,4 +96,11 @@ fn main() {
     
 
     println!("Points: {points}");
+    println!("Scratchcards won: {scratch_cards_won}");
+}
+
+#[allow(unused_variables)]
+fn add_scratch(i: u32, arr: &mut [u32], numbers_won: u32) -> ()
+{
+    todo!();
 }
