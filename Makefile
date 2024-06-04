@@ -2,7 +2,7 @@
 
 flags = -Wall -Wextra -O1
 
-all: 1/day1.exe 1/day1_2.exe 2/day2.exe 2/day2_2.exe 3/day3.exe 3/day3_2.exe 4/day4.exe
+all: 1/day1.exe 1/day1_2.exe 2/day2.exe 2/day2_2.exe 3/day3.exe 3/day3_2.exe 4/target/debug/day4.exe
 
 1/day1.exe: 1/day1.cpp
 
@@ -16,13 +16,14 @@ all: 1/day1.exe 1/day1_2.exe 2/day2.exe 2/day2_2.exe 3/day3.exe 3/day3_2.exe 4/d
 
 3/day3_2.exe: 3/day3_2.cpp
 
-4/day4.exe: 4/day4.rs
+4/target/debug/day4.exe: 4/Cargo.toml 4/day4.rs
+	cargo build --manifest-path 4/Cargo.toml
 
 %.exe: %.cpp
 	g++ $^ $(flags) -o $@
 
-%.exe: %.rs
-	rustc $^ -o $@
+#%.exe: %/Cargo.toml %.rs
+	#cargo build --manifest-path $<
 
 debug: 1/day1.cpp
 	g++ $^ -g -o 1/day1.exe
