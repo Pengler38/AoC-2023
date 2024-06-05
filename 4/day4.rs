@@ -99,8 +99,12 @@ fn main() {
     println!("Scratchcards won: {scratch_cards_won}");
 }
 
-#[allow(unused_variables)]
-fn add_scratch(i: u32, arr: &mut [u32], numbers_won: u32) -> ()
+fn add_scratch(winning_card: u32, arr: &mut [u32], numbers_won: u32) -> ()
 {
-    todo!();
+    let mut i = 1;
+    while i <= numbers_won
+    {
+        arr[(winning_card+i) as usize] += arr[winning_card as usize];
+        i += 1;
+    }
 }
