@@ -28,19 +28,55 @@ fn main() {
     //Parse in the seed numbers
     let mut lineparse: Vec<&str> = lines.next().unwrap().split(' ').collect();
     lineparse.remove(0); //remove the "seeds:"
-    println!("{}", lineparse[0]);
+    eprintln!("{}", lineparse[0]);
     let mut seeds: Vec<u32> = vec![];
     for word in lineparse {
         seeds.push(word.parse::<u32>().unwrap());
     }
 
-    //Parse in the maps
+    //Parse in the mappings
     let mut maps: Vec<Vec<Map>> = Vec::new();
     for _x in 0..7{
        let mut map: Vec<Map> = Vec::new();
        parse(":", &mut map, &mut lines);
        maps.push(map);
     }
+
+
+    //Go through the mappings
+    let mut almanac: Vec<u32> = seeds; //I think this copies seeds rather than acts as a second
+                                       //reference, TODO test for curiosity
+    //For each map, transform the almanac numbers according to the mappings
+    //If the value isn't explicitly mapped, no transformation needed
+    eprintln!();
+    for map in maps{
+        for number in &mut almanac{
+            for mapping in &map{
+                if (*number >= mapping.src) && (*number < mapping.src + mapping.range) {
+                    *number = mapping.dest + (*number - mapping.src);
+                }
+            }
+        }
+
+        for x in &almanac{
+            eprint!("{x}, ");
+        }
+        eprintln!();
+    }
+    print!("Locations found: ");
+    for x in &almanac{
+        print!("{x}, ");
+    }
+    println!();
+
+    //Print lowest location number
+    let mut min: u32 = u32::MAX;
+    for x in almanac{
+        if x < min { 
+            min = x;
+        }
+    }
+    println!("Lowest location: {min}");
 }
 
 //calls lines.next() until start is found, then on the next line, read in the map values until a
@@ -48,23 +84,23 @@ fn main() {
 fn parse(start: &str, arr: &mut Vec<Map>, lines: &mut std::str::Lines){
     while !lines.next().unwrap().contains(start) { }
     loop {
-        let next : &str; 
         //Ensure we have a next line
-        match lines.next() {
-            Some(x) => next = x,
+        let next : &str = match lines.next() {
+            Some(x) => x,
             None => break,
         };
         //Ensure the line is not empty
-        if !next.contains(char::is_numeric) {return;}
+        if !next.contains(char::is_numeric) {break;}
 
-        println!("{next}");
+        eprintln!("{next}");
         let numbers: Vec<&str> = next.split(' ').collect();
         arr.push(
             Map{
-            dest: numbers[0].parse().unwrap(),
-            src: numbers[1].parse().unwrap(),
-            range: numbers[2].parse().unwrap(),
+                dest: numbers[0].parse().unwrap(),
+                src: numbers[1].parse().unwrap(),
+                range: numbers[2].parse().unwrap(),
             }
             );
     }
+    eprintln!();
 }
