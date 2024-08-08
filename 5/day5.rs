@@ -5,9 +5,9 @@ use std::fs;
 use std::env;
 
 struct Map{
-    dest: u32,
-    src: u32,
-    range: u32,
+    dest: u64,
+    src: u64,
+    range: u64,
 }
 
 fn main() {
@@ -29,9 +29,9 @@ fn main() {
     let mut lineparse: Vec<&str> = lines.next().unwrap().split(' ').collect();
     lineparse.remove(0); //remove the "seeds:"
     eprintln!("{}", lineparse[0]);
-    let mut seeds: Vec<u32> = vec![];
+    let mut seeds: Vec<u64> = vec![];
     for word in lineparse {
-        seeds.push(word.parse::<u32>().unwrap());
+        seeds.push(word.parse::<u64>().unwrap());
     }
 
     //Parse in the mappings
@@ -44,8 +44,8 @@ fn main() {
 
 
     //Go through the mappings
-    let mut almanac: Vec<u32> = seeds; //I think this copies seeds rather than acts as a second
-                                       //reference, TODO test for curiosity
+    let mut almanac: Vec<u64> = seeds; //seeds vector moved to almanac
+
     //For each map, transform the almanac numbers according to the mappings
     //If the value isn't explicitly mapped, no transformation needed
     eprintln!();
@@ -54,6 +54,7 @@ fn main() {
             for mapping in &map{
                 if (*number >= mapping.src) && (*number < mapping.src + mapping.range) {
                     *number = mapping.dest + (*number - mapping.src);
+                    break; //Prevent mapping the same number multiple times
                 }
             }
         }
@@ -70,7 +71,7 @@ fn main() {
     println!();
 
     //Print lowest location number
-    let mut min: u32 = u32::MAX;
+    let mut min: u64 = u64::MAX;
     for x in almanac{
         if x < min { 
             min = x;
