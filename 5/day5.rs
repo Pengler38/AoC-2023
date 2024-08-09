@@ -43,15 +43,67 @@ fn main() {
     }
 
 
-    //Go through the mappings
-    let mut almanac: Vec<u64> = seeds; //seeds vector moved to almanac
+    let single_seed_locations = seeds_to_locations(&seeds, &maps);
+
+    print!("Single Seed Locations found: ");
+    for x in &single_seed_locations{
+        print!("{}, ", *x);
+    }
+    println!();
+
+    //Print lowest location number
+    let mut min: u64 = u64::MAX;
+    for x in &single_seed_locations{
+        if *x < min { 
+            min = *x;
+        }
+    }
+    println!("Single Seed Lowest location: {min}");
+
+    //Find the location when using many seeds
+    let mut manyseeds = vec![];
+    let mut x = 0;
+    while x < seeds.len() {
+        let mut seed = seeds[x];
+        let mut range = seeds[x+1];
+
+        while range > 0{
+            manyseeds.push(seed);
+            seed += 1;
+            range -= 1;
+        }
+
+        x += 2;
+    }
+    let many_seed_locations = seeds_to_locations(&manyseeds, &maps);
+
+
+    print!("Many Seed Locations found: ");
+    for x in &many_seed_locations{
+        print!("{}, ", *x);
+    }
+    println!();
+
+    //Print lowest location number
+    let mut min: u64 = u64::MAX;
+    for x in &many_seed_locations{
+        if *x < min { 
+            min = *x;
+        }
+    }
+    println!("Many Seed Lowest location: {min}");
+
+}
+
+fn seeds_to_locations(seeds: &Vec<u64>, maps: &Vec<Vec<Map>>) -> Vec<u64> {
+    let mut almanac = (*seeds.clone()).to_vec();
 
     //For each map, transform the almanac numbers according to the mappings
     //If the value isn't explicitly mapped, no transformation needed
     eprintln!();
     for map in maps{
         for number in &mut almanac{
-            for mapping in &map{
+            for mapping in map{
                 if (*number >= mapping.src) && (*number < mapping.src + mapping.range) {
                     *number = mapping.dest + (*number - mapping.src);
                     break; //Prevent mapping the same number multiple times
@@ -64,20 +116,8 @@ fn main() {
         }
         eprintln!();
     }
-    print!("Locations found: ");
-    for x in &almanac{
-        print!("{x}, ");
-    }
-    println!();
 
-    //Print lowest location number
-    let mut min: u64 = u64::MAX;
-    for x in almanac{
-        if x < min { 
-            min = x;
-        }
-    }
-    println!("Lowest location: {min}");
+    almanac
 }
 
 //calls lines.next() until start is found, then on the next line, read in the map values until a
