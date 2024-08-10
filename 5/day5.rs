@@ -14,7 +14,7 @@ fn main() {
 
     let mut args: Vec<String> = env::args().collect();
     if args.len() < 2 {
-        print!("Usage: ./day5rs.exe ");
+        print!("Usage: ./day5rs.exe path/to/input.txt");
         return;
     }
     //let input = fs::read_to_string(env::args().collect::<Vec<String>>()[0]).expect("File not found");
@@ -62,7 +62,7 @@ fn main() {
 
     //Find the location when using many seeds
     let many_seeds_min = many_seeds_to_lowest_location(&seeds, &maps);
-    println!("Many Seed Lowest location: {many_seeds_min}");
+    println!("\nMany Seed Lowest location: {many_seeds_min}");
 
 }
 
@@ -110,12 +110,17 @@ fn many_seeds_to_lowest_location(seeds: &Vec<u64>, maps: &Vec<Vec<Map>>) -> u64 
         i += 2;
     }
 
+    eprint!("\nInitial almanac: ");
+    for entry in &almanac {
+        eprint!("{}-{}, ", entry.start, entry.end);
+    }
+
     //For each map, transform the almanac numbers according to the mappings
     //If the value isn't explicitly mapped, no transformation needed
     eprintln!();
-    let mut i = 0;
+    let mut i;
     for map in maps{
-
+        i = 0;
         while i < almanac.len() {
 
             let entry = &mut almanac[i];
@@ -124,6 +129,7 @@ fn many_seeds_to_lowest_location(seeds: &Vec<u64>, maps: &Vec<Vec<Map>>) -> u64 
                 let start_in_range = entry.start >= mapping.src && entry.start < mapping.src + mapping.range;
                 let end_in_range = entry.end >= mapping.src && entry.end < mapping.src + mapping.range;
 
+                //eprint!("{}, {},  ", start_in_range, end_in_range);
                 if start_in_range && end_in_range {
                     //Easy case, behaves as before
                     entry.start = mapping.dest + (entry.start - mapping.src);
@@ -134,7 +140,7 @@ fn many_seeds_to_lowest_location(seeds: &Vec<u64>, maps: &Vec<Vec<Map>>) -> u64 
                     //split the entry into 2 ranges, add the second range, and incr. i as to not
                     //try to double map the second range
 
-                    let new_entry;
+                    let mut new_entry;
                     if start_in_range {
                         let split = mapping.src + mapping.range; //split number belongs to the
                                                                  //upper range
@@ -156,9 +162,13 @@ fn many_seeds_to_lowest_location(seeds: &Vec<u64>, maps: &Vec<Vec<Map>>) -> u64 
 
                         entry.end = split - 1;
                     }
+
+                    //Transform the one split entry in the range 
+                    new_entry.start = mapping.dest + (new_entry.start - mapping.src);
+                    new_entry.end = mapping.dest + (new_entry.end - mapping.src);
                     
-                    almanac.insert(i+1, new_entry);
-                    i += 1;
+                    almanac.insert(i, new_entry);
+                    //The old entry is now at i+1, and will be checked if it needs to be mapped
                     break;
                 }
 
@@ -167,10 +177,10 @@ fn many_seeds_to_lowest_location(seeds: &Vec<u64>, maps: &Vec<Vec<Map>>) -> u64 
             i += 1;
         }
 
-        // for x in &almanac{
-        //     eprint!("{}-{}, ", x.start, x.end);
-        // }
-        // eprintln!();
+        for x in &almanac{
+            eprint!("{}-{}, ", x.start, x.end);
+        }
+        eprintln!();
     }
 
     let mut min: u64 = u64::MAX;
