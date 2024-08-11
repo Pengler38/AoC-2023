@@ -2,7 +2,7 @@
 
 flags = -Wall -Wextra -O1
 
-executables = 1/day1.exe 1/day1_2.exe 2/day2.exe 2/day2_2.exe 3/day3.exe 3/day3_2.exe 4/target/debug/day4.exe 5/day5rs.exe 6/day6rs.exe
+executables = 1/day1.exe 1/day1_2.exe 2/day2.exe 2/day2_2.exe 3/day3.exe 3/day3_2.exe 4/target/debug/day4.exe 5/day5rs.exe 6/day6rs.exe 7/day7rs.exe
 
 all: $(executables)
 
