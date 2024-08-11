@@ -5,8 +5,8 @@ use std::fs;
 use std::env;
 
 struct Race {
-    time: u32,
-    distance: u32,
+    time: u64,
+    distance: u64,
 }
 
 fn main() {
@@ -28,15 +28,25 @@ fn main() {
 
 
     //Solve the race problem
-    let mut results: Vec<u32> = Vec::new();
+    race_solve(&races);
+
+
+    //Solve the race problem, treating it as 1 big race
+    println!("\nSingle big race:");
+    let big_race = vec![single_race_parse(&races)];
+    race_solve(&big_race);
+}
+
+fn race_solve(races: &Vec<Race>) {
+    let mut results: Vec<u64> = Vec::new();
 
     for race in races {
         print!("Time: {}, Distance: {} -> ", race.time, race.distance);
 
         //Go through each potential split of race.time and find the min and max times to hold the
         //button that work 
-        let mut min: Option<u32> = None;
-        let mut max: Option<u32> = None;
+        let mut min: Option<u64> = None;
+        let mut max: Option<u64> = None;
 
         for x in 0..race.time {
             let winning = x * (race.time - x) > race.distance;
@@ -65,11 +75,27 @@ fn main() {
     println!("\nFinal multiply: {}", ret);
 }
 
+//Reads the races array as a single race
+fn single_race_parse(races: &Vec<Race>) -> Race{
+    let mut time = String::new();
+    let mut distance = String::new();
+
+    for race in races {
+        time.push_str(&race.time.to_string());
+        distance.push_str(&race.distance.to_string());
+    }
+
+    Race {
+        time: time.parse::<u64>().unwrap(),
+        distance: distance.parse::<u64>().unwrap(),
+    }
+}
+
 
 //Parse in the inputs properly
 fn parse(races: &mut Vec<Race>, lines: Vec<&str>) {
     for word in lines[0].split(' ') {
-        let parsed = match word.parse::<u32>() {
+        let parsed = match word.parse::<u64>() {
             Ok(x) => x,
             Err(_) => continue,
         };
@@ -81,7 +107,7 @@ fn parse(races: &mut Vec<Race>, lines: Vec<&str>) {
     }
     let mut i = 0;
     for word in lines[1].split(' ') {
-        let parsed = match word.parse::<u32>() {
+        let parsed = match word.parse::<u64>() {
             Ok(x) => x,
             Err(_) => continue,
         };
